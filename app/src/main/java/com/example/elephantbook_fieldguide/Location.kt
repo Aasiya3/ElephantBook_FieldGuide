@@ -6,4 +6,5 @@ class Location(
     val dateTime: OffsetDateTime,
     val latitude: Double,
     val longitude: Double,
+    val elephantId: Int,
 )

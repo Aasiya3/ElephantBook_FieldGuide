@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 class ApiGetter {
-    val apiUrl = "http://192.168.5.11:8000/individuals.json"
+    val apiUrl = "https://localhost/individuals.json"
 
     private fun parseDate(dateString: String): OffsetDateTime {
         val cleanedDateString = dateString.trim().replace(' ', 'T')
@@ -25,25 +25,25 @@ class ApiGetter {
         }
     }
 
-    fun updateElephantData(ctx : Context): Pair<List<Elephant>, Map<Int, List<Location>>> {
+    fun updateElephantData(): Pair<List<Elephant>, List<Location>> {
         val elephants = mutableListOf<Elephant>()
-        val locations = mutableMapOf<Int, MutableList<Location>>()
+        val locations = mutableListOf<Location>()
 
-        //https://developer.android.com/training/volley/request#kotlin
-        val queue = Volley.newRequestQueue(ctx)
-        val individualsJsonReq = JsonArrayRequest(apiUrl,
-            { response -> println("BRSAKAI$response") },
-            { error -> println("BRSAKAI_ERR$error") })
-        queue.add(individualsJsonReq)
-
-
-        /* MOCK
-        locations[1] = mutableListOf()
-        locations[1]!!.add(
+        /* MOCK */
+        locations.add(
             Location(
-                parseDate("2021-05-03 13:49:30.698000+00:00"),
-                -1.2156474578899041,
-                35.126746204831626,
+                parseDate("2021-08-03 13:49:30.698000+00:00"),
+                -1.215647,
+                35.12674,
+                1,
+            )
+        )
+        locations.add(
+            Location(
+                parseDate("2021-01-01 01:01:01.1+00:00"),
+                1.5,
+                8.9,
+                1,
             )
         )
 
@@ -54,8 +54,14 @@ class ApiGetter {
                 "FakeElephant",
             )
         )
+        elephants.add(
+            Elephant(
+                2,
+                "b__T__E____-____X__S___",
+                "Invisible Elephant"
+            )
+        )
         /* MOCK */
-        */
         return Pair(elephants, locations)
     }
 }
