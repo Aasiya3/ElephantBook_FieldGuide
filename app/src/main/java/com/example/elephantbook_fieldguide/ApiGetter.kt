@@ -1,67 +1,52 @@
 package com.example.elephantbook_fieldguide
 
-import android.app.DownloadManager
 import android.content.Context
-import android.os.Build
-import androidx.annotation.RequiresApi
-import com.android.volley.Response
-import com.android.volley.toolbox.DiskBasedCache
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
-import java.security.AccessController.getContext
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
-import java.util.*
+import org.json.JSONArray
 
 class ApiGetter {
-    val apiUrl = "https://localhost/individuals.json"
+    // URL to query the API at
+    private val apiUrl = "https://localhost/individuals.json"
 
-    private fun parseDate(dateString: String): OffsetDateTime {
-        val cleanedDateString = dateString.trim().replace(' ', 'T')
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            OffsetDateTime.parse(cleanedDateString, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-        } else {
-            TODO("VERSION.SDK_INT < O")
-        }
-    }
-
-    fun updateElephantData(): Pair<List<Elephant>, List<Location>> {
+    private fun parseApiResponse(response: JSONArray): Pair<List<Elephant>, List<Location>> {
+        // Loop through the list of Elephants in the JSON to create lists of Elephant and Location objects
         val elephants = mutableListOf<Elephant>()
         val locations = mutableListOf<Location>()
+        for (i in 0 until response.length()) {
+            // Create the Elephant object
+            val newElephant = Elephant(response.getJSONObject(i))
+            elephants.add(newElephant)
 
-        /* MOCK */
-        locations.add(
-            Location(
-                parseDate("2021-08-03 13:49:30.698000+00:00"),
-                -1.215647,
-                35.12674,
-                1,
-            )
-        )
-        locations.add(
-            Location(
-                parseDate("2021-01-01 01:01:01.1+00:00"),
-                1.5,
-                8.9,
-                1,
-            )
-        )
+            // Create the Location objects using the Sightings array and the Elephant's id
+            val sightingsArr = response.getJSONObject(i).getJSONArray("sightings")
+            for (j in 0 until sightingsArr.length()) {
+                locations.add(Location(newElephant.id, sightingsArr.getJSONObject(j)))
+            }
+        }
 
-        elephants.add(
-            Elephant(
-                1,
-                "b70T01E808_-403?X00S00?",
-                "FakeElephant",
-            )
-        )
-        elephants.add(
-            Elephant(
-                2,
-                "b__T__E____-____X__S___",
-                "Invisible Elephant"
-            )
-        )
-        /* MOCK */
+        // Return the Elephant and Location data as arrays of class objects
         return Pair(elephants, locations)
+    }
+
+    fun getElephantData(
+        // Don't understand what this is but we need one and only activities can get one AFAIK
+        ctx: Context,
+        // We call this with the lists of response data
+        successCallback: (Pair<List<Elephant>, List<Location>>) -> Unit,
+        // This is technically a VolleyException, but no need to nitpick
+        failCallback: (Exception) -> Unit
+    ) {
+        // Build the request queue and make the request
+        val queue = Volley.newRequestQueue(ctx)
+        val elephantArrReq = JsonArrayRequest(
+            apiUrl,
+            // Call the successCallback with the parsed data, so caller just gets a nice Pair of Lists
+            { response -> successCallback(parseApiResponse(response)) },
+            { err -> failCallback(err) },
+        )
+
+        // Send the request
+        queue.add(elephantArrReq)
     }
 }
