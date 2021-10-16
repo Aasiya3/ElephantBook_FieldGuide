@@ -10,19 +10,18 @@ class ApiGetter {
     private val apiUrl = "https://localhost/individuals.json"
 
     private fun parseApiResponse(response: JSONArray): Pair<List<Elephant>, List<Location>> {
-        // Loop through the list of Elephants in the JSON to create a list of Elephant objects
+        // Loop through the list of Elephants in the JSON to create lists of Elephant and Location objects
         val elephants = mutableListOf<Elephant>()
-        for (i in 0 until response.length()) {
-            elephants.add(Elephant(response.getJSONObject(i)))
-        }
-
         val locations = mutableListOf<Location>()
-        // For each elephant, associate its sightings with its id and create Location objects
         for (i in 0 until response.length()) {
+            // Create the Elephant object
+            val newElephant = Elephant(response.getJSONObject(i))
+            elephants.add(newElephant)
+
+            // Create the Location objects using the Sightings array and the Elephant's id
             val sightingsArr = response.getJSONObject(i).getJSONArray("sightings")
-            val id = response.getJSONObject(i).getInt("id")
             for (j in 0 until sightingsArr.length()) {
-                locations.add(Location(id, sightingsArr.getJSONObject(j)))
+                locations.add(Location(newElephant.id, sightingsArr.getJSONObject(j)))
             }
         }
 
