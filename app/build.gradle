@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -43,4 +44,15 @@ dependencies {
 
     // Volley for HTTP requests, see https://developer.android.com/training/volley/index.html#kts
     implementation 'com.android.volley:volley:1.2.1'
+
+    // https://developer.android.com/training/data-storage/room
+    def roomVersion = "2.3.0"
+
+    implementation("androidx.room:room-runtime:$roomVersion")
+    annotationProcessor("androidx.room:room-compiler:$roomVersion")
+    // To use Kotlin annotation processing tool (kapt)
+    kapt("androidx.room:room-compiler:$roomVersion")
+
+    // https://stackoverflow.com/questions/44354355/unresolved-reference-async-in-kotlin
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
 }

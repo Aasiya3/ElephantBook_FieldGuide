@@ -1,28 +1,23 @@
 package com.example.elephantbook_fieldguide
 
-import android.os.Build
+import androidx.room.Entity
 import org.json.JSONObject
 import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
 
+@Entity(primaryKeys = ["dateTime", "elephantId"])
 data class Location(
     val dateTime: OffsetDateTime,
     val latitude: Double,
     val longitude: Double,
     val elephantId: Int,
 ) {
-    companion object {
-        fun parseDate(dateString: String): OffsetDateTime {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                OffsetDateTime.parse(dateString, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-            } else {
-                TODO("VERSION.SDK_INT < O")
-            }
-        }
+
+    companion object{
+        val converter = Converters()
     }
 
     constructor(id: Int, obj: JSONObject) : this(
-        parseDate(obj.getString("datetime")),
+        converter.toOffsetDateTime(obj.getString("datetime")),
         obj.getDouble("lat"),
         obj.getDouble("lon"),
         id

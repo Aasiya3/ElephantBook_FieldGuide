@@ -1,9 +1,12 @@
 package com.example.elephantbook_fieldguide
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import org.json.JSONObject
 
+@Entity
 data class Elephant(
-    val id: Int,
+    @PrimaryKey val id: Int,
     val seek: String,
     val name: String,
     val pfp: String

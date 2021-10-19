@@ -7,7 +7,7 @@ import org.json.JSONArray
 
 class ApiGetter {
     // URL to query the API at
-    private val apiUrl = "https://localhost/individuals.json"
+    private val apiUrl = "https://brsakai.com/individuals.json"
 
     private fun parseApiResponse(response: JSONArray): Pair<List<Elephant>, List<Location>> {
         // Loop through the list of Elephants in the JSON to create lists of Elephant and Location objects
