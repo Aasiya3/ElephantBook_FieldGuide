@@ -13,7 +13,3 @@
 .externalNativeBuild
 .cxx
 local.properties
-.project
-.settings/
-
-./app/src/main/java/com/example/elephantbook_fieldguide/Secrets.kt
