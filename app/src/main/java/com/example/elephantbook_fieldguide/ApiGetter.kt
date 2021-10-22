@@ -7,11 +7,10 @@ import org.json.JSONArray
 
 class ApiGetter(
     // Don't understand what this is but we need one and only activities can get one AFAIK
-    // This feels screwy but if it works...
     private val ctx: Context,
 ) {
     // URL to query the API at
-    private val apiUrl = "https://brsakai.com/individuals.json"
+    private val apiUrl = "https://localhost/individuals.json"
 
     private fun parseApiResponse(response: JSONArray): Pair<List<Elephant>, List<Location>> {
         // Loop through the list of Elephants in the JSON to create lists of Elephant and Location objects
