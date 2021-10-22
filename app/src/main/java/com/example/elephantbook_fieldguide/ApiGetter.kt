@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 class ApiGetter {
-    val apiUrl = "https://localhost/individuals.json"
+    val apiUrl = Secrets().apiUrl
 
     private fun parseDate(dateString: String): OffsetDateTime {
         val cleanedDateString = dateString.trim().replace(' ', 'T')
