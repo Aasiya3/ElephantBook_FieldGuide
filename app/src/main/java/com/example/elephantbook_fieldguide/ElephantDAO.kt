@@ -14,4 +14,7 @@ interface ElephantDAO {
 
     @Query("SELECT * FROM Elephant")
     fun getAll(): List<Elephant>
+
+    @Query("DELETE FROM Elephant")
+    fun clear()
 }

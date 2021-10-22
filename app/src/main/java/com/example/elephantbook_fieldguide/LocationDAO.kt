@@ -10,8 +10,11 @@ interface LocationDAO {
     fun insertAll(locations : List<Location>)
 
     @Query("SELECT * FROM Location WHERE elephantId = :id")
-    fun getById(id : Int) : Location
+    fun getById(id : Int) : List<Location>
 
     @Query("SELECT * FROM Location")
     fun getAll() : List<Location>
+
+    @Query("DELETE FROM Location")
+    fun clear()
 }
