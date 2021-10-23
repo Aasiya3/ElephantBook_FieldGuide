@@ -10,6 +10,7 @@ import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONArray
 import java.io.ByteArrayOutputStream
+import java.io.File
 
 class ApiGetter(
     // Don't understand what this is but we need one and only activities can get one AFAIK
@@ -63,12 +64,19 @@ class ApiGetter(
         override fun getBitmap(url: String?): Bitmap? {
             return cache.get(url)
         }
+
         override fun putBitmap(url: String?, bitmap: Bitmap?) {
             cache.put(url, bitmap)
         }
     })
 
-    fun downloadImage(url: String, path: String) {
+    fun downloadImage(url: String, path: String, then: () -> Unit) {
+        // If this file already exists, we're done
+        if(File(path).exists()) {
+            then()
+            return
+        }
+        // Create the ImageLoader for this URL
         imageLoader.get(
             url,
             object : ImageLoader.ImageListener {
@@ -76,14 +84,20 @@ class ApiGetter(
                     response: ImageLoader.ImageContainer,
                     isImmediate: Boolean
                 ) {
+                    // If this is immediate and we got no bitmap, this is a cache miss and we ignore it
                     if (isImmediate && (response.bitmap == null)) return
+                    // Open the file and write the image to it
                     ctx.openFileOutput(path, Context.MODE_PRIVATE).use {
                         val stream = ByteArrayOutputStream()
+                        // This compression works for jpegs also... not sure if that's cool or not
                         response.bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
                         it.write(stream.toByteArray())
                     }
+                    // Do our callback action
+                    then()
                 }
 
+                // Wish we had some error handling anywhere in this code :(
                 override fun onErrorResponse(err: VolleyError) {
                     println(err) // TODO Error Handling
                 }
