@@ -1,14 +1,23 @@
 package com.example.elephantbook_fieldguide
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
+import android.util.LruCache
+import com.android.volley.VolleyError
+import com.android.volley.toolbox.ImageLoader
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONArray
+import java.io.ByteArrayOutputStream
 
 class ApiGetter(
     // Don't understand what this is but we need one and only activities can get one AFAIK
     private val ctx: Context,
 ) {
+    // Build the request queue and make the request
+    private val queue = Volley.newRequestQueue(ctx)
+
     // URL to query the API at
     private val apiUrl = "https://localhost/individuals.json"
 
@@ -38,8 +47,6 @@ class ApiGetter(
         // This is technically a VolleyException, but no need to nitpick
         failCallback: (Exception) -> Unit
     ) {
-        // Build the request queue and make the request
-        val queue = Volley.newRequestQueue(ctx)
         val elephantArrReq = JsonArrayRequest(
             apiUrl,
             // Call the successCallback with the parsed data, so caller just gets a nice Pair of Lists
@@ -49,5 +56,38 @@ class ApiGetter(
 
         // Send the request
         queue.add(elephantArrReq)
+    }
+
+    private val imageLoader = ImageLoader(queue, object : ImageLoader.ImageCache {
+        val cache = LruCache<String, Bitmap>(50)
+        override fun getBitmap(url: String?): Bitmap? {
+            return cache.get(url)
+        }
+        override fun putBitmap(url: String?, bitmap: Bitmap?) {
+            cache.put(url, bitmap)
+        }
+    })
+
+    fun downloadImage(url: String, path: String) {
+        imageLoader.get(
+            url,
+            object : ImageLoader.ImageListener {
+                override fun onResponse(
+                    response: ImageLoader.ImageContainer,
+                    isImmediate: Boolean
+                ) {
+                    if (isImmediate && (response.bitmap == null)) return
+                    ctx.openFileOutput(path, Context.MODE_PRIVATE).use {
+                        val stream = ByteArrayOutputStream()
+                        response.bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                        it.write(stream.toByteArray())
+                    }
+                }
+
+                override fun onErrorResponse(err: VolleyError) {
+                    println(err) // TODO Error Handling
+                }
+            }
+        )
     }
 }
