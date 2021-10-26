@@ -5,7 +5,10 @@ import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONArray
 
-class ApiGetter {
+class ApiGetter(
+    // Don't understand what this is but we need one and only activities can get one AFAIK
+    private val ctx: Context,
+) {
     // URL to query the API at
     private val apiUrl = Secrets().apiUrl
 
@@ -30,8 +33,6 @@ class ApiGetter {
     }
 
     fun getElephantData(
-        // Don't understand what this is but we need one and only activities can get one AFAIK
-        ctx: Context,
         // We call this with the lists of response data
         successCallback: (Pair<List<Elephant>, List<Location>>) -> Unit,
         // This is technically a VolleyException, but no need to nitpick
