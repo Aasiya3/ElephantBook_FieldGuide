@@ -29,6 +29,11 @@ class DatabaseWrapper(
     fun updateDatabase(then: () -> Unit) {
         apiGetter.getElephantData(
             { response ->
+                // Clear and re-fill the database
+                elephantDAO.clear()
+                locationDAO.clear()
+                elephantDAO.insertAll(response.first)
+                locationDAO.insertAll(response.second)
                 // Counts how many more PFPs we have to download
                 // When this hits 0, we're good to move on
                 val pfpCounter = AtomicInteger(response.first.size)
@@ -42,11 +47,6 @@ class DatabaseWrapper(
                         if (!it) Log.i("updateDatabase", "Could not get ${elephant.pfp}")
                         // If the pfpCounter is 0, we were the last downloader
                         if (pfpCounter.decrementAndGet() == 0) {
-                            // Clear and re-fill the database
-                            elephantDAO.clear()
-                            locationDAO.clear()
-                            elephantDAO.insertAll(response.first)
-                            locationDAO.insertAll(response.second)
                             // Caller callback
                             then()
                         }
