@@ -3,6 +3,7 @@ package com.example.elephantbook_fieldguide
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.util.Log
 import android.util.LruCache
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.ImageLoader
@@ -21,6 +22,7 @@ class ApiGetter(
 
     // URL to query the API at
     private val apiUrl = Secrets().apiUrl
+    private val imageUrl = Secrets().imageUrl
 
     private fun parseApiResponse(response: JSONArray): Pair<List<Elephant>, List<Location>> {
         // Loop through the list of Elephants in the JSON to create lists of Elephant and Location objects
@@ -70,22 +72,22 @@ class ApiGetter(
         }
     })
 
-    fun downloadImage(url: String, path: String, then: () -> Unit) {
+    fun downloadImage(url: String, path: String, then: (Boolean) -> Unit) {
         // If this file already exists, we're done
-        if(File(path).exists()) {
-            then()
+        if (File(path).exists()) {
+            then(true)
             return
         }
         // Create the ImageLoader for this URL
         imageLoader.get(
-            url,
+            imageUrl + url,
             object : ImageLoader.ImageListener {
                 override fun onResponse(
                     response: ImageLoader.ImageContainer,
                     isImmediate: Boolean
                 ) {
-                    // If this is immediate and we got no bitmap, this is a cache miss and we ignore it
-                    if (isImmediate && (response.bitmap == null)) return
+                    // If we got no bitmap, this is a cache miss and we ignore it
+                    if (response.bitmap == null) return
                     // Open the file and write the image to it
                     ctx.openFileOutput(path, Context.MODE_PRIVATE).use {
                         val stream = ByteArrayOutputStream()
@@ -93,13 +95,16 @@ class ApiGetter(
                         response.bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
                         it.write(stream.toByteArray())
                     }
-                    // Do our callback action
-                    then()
+                    then(true)
                 }
 
                 // Wish we had some error handling anywhere in this code :(
                 override fun onErrorResponse(err: VolleyError) {
-                    println(err) // TODO Error Handling
+                    Log.w(
+                        "ApiGetter",
+                        "Failed to load image with error ${err.toString()}"
+                    )
+                    then(false)
                 }
             }
         )

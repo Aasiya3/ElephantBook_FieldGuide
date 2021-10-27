@@ -18,15 +18,9 @@ class MainActivity : AppCompatActivity() {
         val simpleImageView = findViewById<View>(R.id.simpleImageView) as ImageView
 
         // TESTING CODE
-        val apiGetter = ApiGetter(applicationContext)
-        val path = "elephant5.jpg"
-        apiGetter.downloadImage(
-            "https://media-cldnry.s-nbcnews.com/image/upload/newscms/2021_42/3514300/211022-mozambique-elephants-mb-0945.jpg",
-            path
-        ) {
-            val myDraw = Drawable.createFromStream(applicationContext.openFileInput(path), path)
-            simpleImageView.setImageDrawable(myDraw)
-            //^^changes attribute srcCompat
+        val dbW = DatabaseWrapper(applicationContext)
+        dbW.updateDatabase {
+            simpleImageView.setImageDrawable(dbW.getElephantPfp(5))
         }
         // TESTING CODE
 
