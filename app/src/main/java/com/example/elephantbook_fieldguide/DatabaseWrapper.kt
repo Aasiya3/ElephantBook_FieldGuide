@@ -40,12 +40,20 @@ class DatabaseWrapper(
         return elephantDAO.getById(id)
     }
 
+    fun getElephantsByNamePrefix(prefix: String): List<Elephant> {
+        return elephantDAO.getByNamePrefix(prefix).sortedBy { it.name }
+    }
+
     fun getAllLocations(): List<Location> {
         return locationDAO.getAll()
     }
 
     fun getLocationById(id: Int): List<Location> {
         return locationDAO.getById(id)
+    }
+
+    fun getLatestLocation(id: Int): Location? {
+        return locationDAO.getLatest(id)
     }
 
 }
