@@ -20,7 +20,7 @@ class ApiGetter(
     private val queue = Volley.newRequestQueue(ctx)
 
     // URL to query the API at
-    private val apiUrl = "https://localhost/individuals.json"
+    private val apiUrl = Secrets().apiUrl
 
     private fun parseApiResponse(response: JSONArray): Pair<List<Elephant>, List<Location>> {
         // Loop through the list of Elephants in the JSON to create lists of Elephant and Location objects
