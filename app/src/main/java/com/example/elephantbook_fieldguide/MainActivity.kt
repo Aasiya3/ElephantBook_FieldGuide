@@ -21,6 +21,8 @@ class MainActivity : AppCompatActivity() {
         val dbW = DatabaseWrapper(applicationContext)
         dbW.updateDatabase {
             simpleImageView.setImageDrawable(dbW.getElephantPfp(5))
+            println(dbW.getElephantsByNamePrefix("F"))
+            println(dbW.getLatestLocation(5))
         }
         // TESTING CODE
 
