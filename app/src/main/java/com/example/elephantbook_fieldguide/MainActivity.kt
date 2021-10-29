@@ -12,6 +12,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val dbW = DatabaseWrapper(applicationContext)
-        println(dbW.getAllLocations())
+        println(dbW.getElephantsByNamePrefix("F"))
+        println(dbW.getLatestLocation(5))
     }
 }
