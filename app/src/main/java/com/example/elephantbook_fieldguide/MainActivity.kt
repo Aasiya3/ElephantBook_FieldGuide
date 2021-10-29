@@ -1,21 +1,21 @@
 package com.example.elephantbook_fieldguide
 
-import android.content.Context
-import android.graphics.drawable.Drawable
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
-import androidx.room.Room
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.*
-import java.io.File
-import kotlin.concurrent.thread
+import org.osmdroid.config.Configuration
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        val simpleImageView = findViewById<View>(R.id.simpleImageView) as ImageView
+        setContentView(R.layout.elephantpage)
+        val simpleImageView = findViewById<View>(R.id.elephantPicture) as ImageView
+
+        // https://github.com/osmdroid/osmdroid/wiki/Important-notes-on-using-osmdroid-in-your-app
+        //5.6 and newer
+        Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID
 
         // TESTING CODE
         val dbW = DatabaseWrapper(applicationContext)

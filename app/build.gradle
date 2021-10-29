@@ -55,4 +55,7 @@ dependencies {
 
     // https://stackoverflow.com/questions/44354355/unresolved-reference-async-in-kotlin
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
+
+    //https://github.com/osmdroid/osmdroid
+    implementation 'org.osmdroid:osmdroid-android:6.1.10'
 }
