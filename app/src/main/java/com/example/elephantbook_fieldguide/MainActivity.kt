@@ -24,12 +24,16 @@ class MainActivity : AppCompatActivity() {
         val dbW = DatabaseWrapper(applicationContext)
         // TESTING CODE
 
-        findViewById<ImageView>(R.id.elephantPicture).setImageDrawable(dbW.getElephantPfp(elephantID))
+        with(findViewById<ImageView>(R.id.elephantPicture)) {
+            dbW.getElephantPfp(elephantID)?.let { setImageDrawable(it) }
+                ?: setImageResource(android.R.drawable.gallery_thumb)
+        }
+
         setupMap(findViewById(R.id.mapView), dbW.getLocationsById(elephantID))
 
         val myElephant = dbW.getElephantById(elephantID)
         findViewById<TextView>(R.id.elephantName).text = myElephant?.name ?: "Elephant not found"
-        findViewById<TextView>(R.id.seekCode).text = myElephant?.seek ?: "??T??E????-????X??S???"
+        findViewById<TextView>(R.id.seekCode).text = myElephant?.seek ?: "???T??E????-????X??S???"
 
         findViewById<TextView>(R.id.lastSeen).text =
             dbW.getLatestLocation(elephantID)?.toString() ?: "No location data available"
