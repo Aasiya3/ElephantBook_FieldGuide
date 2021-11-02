@@ -27,7 +27,7 @@ class IndividualActivity : AppCompatActivity() {
             databaseWrapper.getElephantPfp(elephantID)
                 ?: AppCompatResources.getDrawable(
                     applicationContext,
-                    android.R.drawable.gallery_thumb
+                    android.R.drawable.ic_menu_gallery
                 )
         )
 
