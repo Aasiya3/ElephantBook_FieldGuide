@@ -1,16 +1,13 @@
 package com.example.elephantbook_fieldguide
 
 import android.os.Bundle
-import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
-import java.time.OffsetDateTime
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,9 +34,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun addMarker(mapView: MapView, location: Location) {
-        val elephantPoint = GeoPoint(location.latitude, location.longitude)
         val elephantMarker = Marker(mapView)
-        elephantMarker.position = elephantPoint
+        elephantMarker.position = location.toGeoPoint()
         elephantMarker.snippet = location.dateTime.toString()
         mapView.overlays.add(elephantMarker)
     }
@@ -53,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         // cleaner code to performance at this point
         // We do the line before the markers cause otherwise we draw over markers :(
         for (location in elephantLocations) {
-            polyline.addPoint(GeoPoint(location.latitude, location.longitude))
+            polyline.addPoint(location.toGeoPoint())
         }
         mapView.overlays.add(polyline)
 
@@ -64,8 +60,7 @@ class MainActivity : AppCompatActivity() {
         // If we have any locations, center on that. Otherwise center on default location
         val recentPoint =
             if (elephantLocations.isNotEmpty()) {
-                val recentLocation = elephantLocations.last()
-                GeoPoint(recentLocation.latitude, recentLocation.longitude)
+                elephantLocations.last().toGeoPoint()
             } else {
                 GeoPoint(-1.49, 35.143889)
             }
