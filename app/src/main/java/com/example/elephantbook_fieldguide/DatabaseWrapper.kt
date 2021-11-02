@@ -85,7 +85,7 @@ class DatabaseWrapper(
         return locationDAO.getAll()
     }
 
-    fun getLocationById(id: Int): List<Location> {
+    fun getLocationsById(id: Int): List<Location> {
         return locationDAO.getById(id)
     }
 

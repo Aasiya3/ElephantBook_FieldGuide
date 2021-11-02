@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         println(dbW.getLatestLocation(5))
         //}
 
-        setupMap(findViewById<MapView>(R.id.mapView), dbW, 5)
+        setupMap(findViewById<MapView>(R.id.mapView), dbW.getLocationsById(5))
 
         // TESTING CODE
 
@@ -40,8 +40,11 @@ class MainActivity : AppCompatActivity() {
         mapView.overlays.add(elephantMarker)
     }
 
-    private fun setupMap(mapView: MapView, dbW: DatabaseWrapper, id: Int) {
-        val elephantLocations = dbW.getLocationById(id).sortedBy { it.dateTime }
+    private fun setupMap(
+        mapView: MapView,
+        locationsUnsorted: List<Location>,
+        elephantLocations: List<Location> = locationsUnsorted.sortedBy { it.dateTime }
+    ) {
         // "If MapView is not provided, infowindow popup will not function unless you set it yourself."
         // This is desired behavior. Empty infowindows are not useful
         val polyline = Polyline()
@@ -53,15 +56,18 @@ class MainActivity : AppCompatActivity() {
         }
         mapView.overlays.add(polyline)
 
+        // Add all the markers to the map
         for (location in elephantLocations) {
             addMarker(mapView, location)
         }
 
-        // If we have any locations, center on that. Otherwise center on default location
+        // If we have any locations, center on the most recent. Otherwise center on default location
         val recentPoint =
             if (elephantLocations.isNotEmpty()) {
+                // Most recent point is last in the list since we sorted by time
                 elephantLocations.last().toGeoPoint()
             } else {
+                // This is just someplace nearby the Mara reserve
                 GeoPoint(-1.49, 35.143889)
             }
         mapView.controller.setZoom(11.0)
