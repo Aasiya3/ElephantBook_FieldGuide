@@ -9,7 +9,7 @@ data class Elephant(
     @PrimaryKey val id: Int,
     val seek: String,
     val name: String,
-    val pfp: String
+    val pfp: String,
 ) {
     constructor(obj: JSONObject) : this(
         obj.getInt("id"),
