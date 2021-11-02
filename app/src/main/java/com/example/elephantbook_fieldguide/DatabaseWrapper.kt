@@ -48,4 +48,41 @@ class DatabaseWrapper(
         return locationDAO.getById(id)
     }
 
+    private fun seekDistance(seek: String, otherSeek: String): Int{
+        val givenCode = seek.toMutableList()
+        val otherCode = otherSeek.toMutableList()
+
+        val equal : MutableList<Int> = arrayListOf()
+        for(i in givenCode.indices){
+            if(givenCode[i] == otherCode[i]){
+                equal.add(1)
+            }else{
+                equal.add(0)
+            }
+        }
+
+        //Equal or one is wildcard
+        var penalty = 0 //wildcard penalty
+        var average = 0
+        for(i in givenCode.indices){
+            if(equal[i] == 1 || givenCode[i] == '?' || otherCode[i] == '?'){
+                average++
+                if(otherCode[i] =='?'){
+                    penalty++
+                }
+            }
+        }
+        average /= givenCode.size
+        penalty /= givenCode.size
+        return average - penalty
+    }
+
+    fun getElephantsBySeek(seek: String): List<Elephant> {
+        val Elephants = elephantDAO.getAll()
+        val sortedElephants = Elephants.sortedBy {
+            Elephant -> seekDistance(seek, Elephant.seek)
+        }
+        return sortedElephants
+    }
+
 }
