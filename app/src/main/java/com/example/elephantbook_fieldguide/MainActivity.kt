@@ -2,6 +2,7 @@ package com.example.elephantbook_fieldguide
 
 import android.os.Bundle
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
@@ -19,18 +20,19 @@ class MainActivity : AppCompatActivity() {
         Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID
 
         // TESTING CODE
-        val simpleImageView = findViewById<ImageView>(R.id.elephantPicture)
+        val elephantID = 5
         val dbW = DatabaseWrapper(applicationContext)
-        //dbW.updateDatabase {
-        simpleImageView.setImageDrawable(dbW.getElephantPfp(5))
-        println(dbW.getElephantsByNamePrefix("F"))
-        println(dbW.getLatestLocation(5))
-        //}
-
-        setupMap(findViewById<MapView>(R.id.mapView), dbW.getLocationsById(5))
-
         // TESTING CODE
 
+        findViewById<ImageView>(R.id.elephantPicture).setImageDrawable(dbW.getElephantPfp(elephantID))
+        setupMap(findViewById(R.id.mapView), dbW.getLocationsById(elephantID))
+
+        val myElephant = dbW.getElephantById(elephantID)
+        findViewById<TextView>(R.id.elephantName).text = myElephant?.name ?: "Elephant not found"
+        findViewById<TextView>(R.id.seekCode).text = myElephant?.seek ?: "??T??E????-????X??S???"
+
+        findViewById<TextView>(R.id.lastSeen).text =
+            dbW.getLatestLocation(elephantID)?.toString() ?: "No location data available"
     }
 
     private fun addMarker(mapView: MapView, location: Location) {

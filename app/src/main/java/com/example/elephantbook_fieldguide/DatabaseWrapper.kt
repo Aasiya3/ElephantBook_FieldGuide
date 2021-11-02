@@ -64,12 +64,12 @@ class DatabaseWrapper(
         return elephantDAO.getAll()
     }
 
-    fun getElephantById(id: Int): Elephant {
+    fun getElephantById(id: Int): Elephant? {
         return elephantDAO.getById(id)
     }
 
     fun getElephantPfp(id: Int): Drawable? {
-        val pfp = getElephantById(id).pfp.replace('/', '_')
+        val pfp = getElephantById(id)?.pfp?.replace('/', '_') ?: return null
         return try {
             Drawable.createFromStream(ctx.openFileInput(pfp), pfp)
         } catch (e: FileNotFoundException) {
