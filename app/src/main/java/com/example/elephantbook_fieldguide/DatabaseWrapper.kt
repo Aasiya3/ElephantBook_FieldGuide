@@ -1,16 +1,12 @@
 package com.example.elephantbook_fieldguide
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.provider.Settings
 import android.util.Log
 import androidx.room.Room
-import kotlinx.coroutines.*
-import java.io.File
 import java.io.FileNotFoundException
 import java.util.concurrent.atomic.AtomicInteger
-import java.util.concurrent.locks.ReadWriteLock
-import java.util.concurrent.locks.ReentrantReadWriteLock
 
 class DatabaseWrapper(
     private val ctx: Context,
@@ -25,6 +21,15 @@ class DatabaseWrapper(
     private val elephantDAO: ElephantDAO = elephantBookDatabase.elephantDAO()
     private val locationDAO: LocationDAO = elephantBookDatabase.locationDAO()
     private val apiGetter: ApiGetter = ApiGetter(ctx)
+
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        var singleton: DatabaseWrapper? = null // This complains but we ignore it ;)
+        fun create(ctx: Context): DatabaseWrapper {
+            if (singleton == null) singleton = DatabaseWrapper(ctx)
+            return singleton!!
+        }
+    }
 
     fun updateDatabase(then: () -> Unit) {
         apiGetter.getElephantData(
@@ -76,7 +81,7 @@ class DatabaseWrapper(
             null
         }
     }
-    
+
     fun getElephantsByNamePrefix(prefix: String): List<Elephant> {
         return elephantDAO.getByNamePrefix(prefix).sortedBy { it.name }
     }

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.elephantbook_fieldguide">
-
     <!-- For volley, see https://stackoverflow.com/questions/2169294/how-to-add-manifest-permission-to-an-application -->
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -12,6 +11,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ElephantBookFieldGuide">
+        <activity
+            android:name=".IndividualActivity"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
