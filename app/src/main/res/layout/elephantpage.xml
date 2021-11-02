@@ -28,21 +28,31 @@
         android:layout_height="54dp"
         android:text="TextView"
         tools:layout_editor_absoluteX="113dp"
-        tools:layout_editor_absoluteY="16dp" />
+        tools:layout_editor_absoluteY="59dp" />
 
     <TextView
         android:id="@+id/seekCode"
         android:layout_width="410dp"
         android:layout_height="32dp"
         android:text="TextView"
-        tools:layout_editor_absoluteX="2dp"
-        tools:layout_editor_absoluteY="81dp" />
+        tools:layout_editor_absoluteX="6dp"
+        tools:layout_editor_absoluteY="113dp" />
 
     <ImageView
         android:id="@+id/elephantPicture"
-        android:layout_width="410dp"
-        android:layout_height="187dp"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="129dp"
+        android:layout_width="418dp"
+        android:layout_height="171dp"
+        tools:layout_editor_absoluteX="-3dp"
+        tools:layout_editor_absoluteY="145dp"
         tools:srcCompat="@tools:sample/avatars" />
+
+
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/navigation_bar"
+        android:layout_width="412dp"
+        android:layout_height="wrap_content"
+        tools:layout_editor_absoluteX="-2dp"
+        tools:layout_editor_absoluteY="0dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
