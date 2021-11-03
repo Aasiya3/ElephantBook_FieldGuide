@@ -1,15 +1,23 @@
 package com.example.elephantbook_fieldguide
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
 import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+
 
 class IndividualActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +46,8 @@ class IndividualActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.seekCode).text = myElephant?.seek ?: "???T??E????-????X??S???"
 
         findViewById<TextView>(R.id.lastSeen).text =
-            databaseWrapper.getLatestLocation(elephantID)?.toString() ?: "No location data available"
+            databaseWrapper.getLatestLocation(elephantID)?.toString()
+                ?: "No location data available"
     }
 
     private fun addMarker(mapView: MapView, location: Location) {
@@ -50,11 +59,52 @@ class IndividualActivity : AppCompatActivity() {
         )
     }
 
+    private fun addLocationToMap(mapView: MapView) {
+        val prov = GpsMyLocationProvider(applicationContext)
+        prov.addLocationSource(LocationManager.NETWORK_PROVIDER)
+        val locationOverlay = MyLocationNewOverlay(prov, mapView)
+        locationOverlay.enableMyLocation()
+        mapView.overlayManager.add(locationOverlay)
+    }
+
+    fun checkLocationPermissions(mapView: MapView) {
+        if (ContextCompat.checkSelfPermission(
+                applicationContext,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            return addLocationToMap(mapView)
+        }
+        // Register the permissions callback, which handles the user's response to the
+        // system permissions dialog. Save the return value, an instance of
+        // ActivityResultLauncher. You can use either a val, as shown in this snippet,
+        // or a lateinit var in your onAttach() or onCreate() method.
+        val requestPermissionLauncher =
+            registerForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { isGranted: Boolean ->
+                if (isGranted) {
+                    // Permission is granted. Continue the action or workflow in your
+                    // app.
+                    addLocationToMap(mapView)
+                } else {
+                    println("No location granted :(")
+                }
+            }
+
+        // The registered ActivityResultCallback gets the result of this request.
+        requestPermissionLauncher.launch(
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+    }
+
+
     private fun setupMap(
         mapView: MapView,
         locationsUnsorted: List<Location>,
         elephantLocations: List<Location> = locationsUnsorted.sortedBy { it.dateTime }
     ) {
+        checkLocationPermissions(mapView)
         // "If MapView is not provided, infowindow popup will not function unless you set it yourself."
         // This is desired behavior. Empty infowindows are not useful
         val polyline = Polyline()
