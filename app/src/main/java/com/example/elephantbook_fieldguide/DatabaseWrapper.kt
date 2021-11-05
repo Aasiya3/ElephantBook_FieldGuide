@@ -62,7 +62,7 @@ class DatabaseWrapper(
             },
             { err ->
                 Toast.makeText(ctx, "Database update failed!", Toast.LENGTH_LONG).show()
-                println(err) // TODO Error handling
+                Log.w("updateDatabase", "Could not reach API: $err")
             }
         )
     }
