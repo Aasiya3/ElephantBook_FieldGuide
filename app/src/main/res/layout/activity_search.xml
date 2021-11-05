@@ -4,38 +4,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".SearchActivity">
 
-    <Button
-        android:id="@+id/seekButton"
+    <EditText
+        android:id="@+id/query"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Search by SEEK"
-        app:layout_constraintBottom_toTopOf="@+id/nameButton"
+        android:ems="10"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/nameButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Search by Name"
-        app:layout_constraintBottom_toTopOf="@+id/updateDatabaseButton"
+    <TextView
+        android:id="@+id/results"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/query"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/seekButton" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/updateDatabaseButton"
+        android:id="@+id/displayButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Update Database"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="Show Elephant"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nameButton" />
+        app:layout_constraintTop_toBottomOf="@+id/query" />
 </androidx.constraintlayout.widget.ConstraintLayout>

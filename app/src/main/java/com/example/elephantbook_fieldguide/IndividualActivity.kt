@@ -22,7 +22,7 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 class IndividualActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.elephantpage)
+        setContentView(R.layout.activity_individual)
         // https://github.com/osmdroid/osmdroid/wiki/Important-notes-on-using-osmdroid-in-your-app
         //5.6 and newer
         Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID

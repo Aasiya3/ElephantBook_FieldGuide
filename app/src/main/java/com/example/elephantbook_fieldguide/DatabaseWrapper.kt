@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.room.Room
 import java.io.FileNotFoundException
+import java.lang.Integer.min
 import java.util.concurrent.atomic.AtomicInteger
 
 class DatabaseWrapper(
@@ -94,16 +95,19 @@ class DatabaseWrapper(
         return locationDAO.getById(id)
     }
 
+    private fun normalizeSeek(seek: String): String {
+        return ("$seek??????????????????????").substring(0, 22)
+    }
 
-    private fun seekDistance(seek: String, otherSeek: String): Int{
-        val givenCode = seek.toMutableList()
-        val otherCode = otherSeek.toMutableList()
+    private fun seekDistance(seek: String, otherSeek: String): Int {
+        val givenCode = normalizeSeek(seek).toMutableList()
+        val otherCode = normalizeSeek(otherSeek).toMutableList()
 
-        val equal : MutableList<Int> = arrayListOf()
-        for(i in givenCode.indices){
-            if(givenCode[i] == otherCode[i]){
+        val equal: MutableList<Int> = arrayListOf()
+        for (i in givenCode.indices) {
+            if (givenCode[i] == otherCode[i]) {
                 equal.add(1)
-            }else{
+            } else {
                 equal.add(0)
             }
         }
@@ -111,25 +115,19 @@ class DatabaseWrapper(
         //Equal or one is wildcard
         var penalty = 0 //wildcard penalty
         var average = 0
-        for(i in givenCode.indices){
-            if(equal[i] == 1 || givenCode[i] == '?' || otherCode[i] == '?'){
+        for (i in givenCode.indices) {
+            if (equal[i] == 1 || givenCode[i] == '?' || otherCode[i] == '?') {
                 average++
-                if(otherCode[i] =='?'){
+                if (otherCode[i] == '?') {
                     penalty++
                 }
             }
         }
-        average /= givenCode.size
-        penalty /= givenCode.size
         return average - penalty
     }
 
     fun getElephantsBySeek(seek: String): List<Elephant> {
-        val Elephants = elephantDAO.getAll()
-        val sortedElephants = Elephants.sortedBy {
-            Elephant -> seekDistance(seek, Elephant.seek)
-        }
-        return sortedElephants
+        return elephantDAO.getAll().sortedByDescending { seekDistance(seek, it.seek) }
     }
 
     fun getLatestLocation(id: Int): Location? {

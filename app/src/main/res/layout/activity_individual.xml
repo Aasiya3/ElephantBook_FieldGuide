@@ -20,29 +20,44 @@
         android:layout_height="50dp"
         android:text="TextView"
         app:layout_constraintBottom_toTopOf="@+id/mapView"
-        tools:layout_editor_absoluteX="-2dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/elephantName"
         android:layout_width="184dp"
         android:layout_height="54dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="11dp"
         android:text="TextView"
-        tools:layout_editor_absoluteX="113dp"
-        tools:layout_editor_absoluteY="16dp" />
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@+id/seekCode"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/seekCode"
         android:layout_width="410dp"
         android:layout_height="32dp"
+        android:layout_marginTop="11dp"
         android:text="TextView"
-        tools:layout_editor_absoluteX="2dp"
-        tools:layout_editor_absoluteY="81dp" />
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/elephantName" />
 
     <ImageView
         android:id="@+id/elephantPicture"
         android:layout_width="410dp"
         android:layout_height="187dp"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="129dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seekCode"
         tools:srcCompat="@tools:sample/avatars" />
 </androidx.constraintlayout.widget.ConstraintLayout>
