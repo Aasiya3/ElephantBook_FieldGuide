@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.Log
+import android.widget.Toast
 import androidx.room.Room
 import java.io.FileNotFoundException
 import java.lang.Integer.min
@@ -60,7 +61,7 @@ class DatabaseWrapper(
                 }
             },
             { err ->
-                println("BRSAKAI_ERR")
+                Toast.makeText(ctx, "Database update failed!", Toast.LENGTH_LONG).show()
                 println(err) // TODO Error handling
             }
         )
