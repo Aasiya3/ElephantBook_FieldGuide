@@ -18,6 +18,9 @@ interface ElephantDAO {
     @Query("SELECT * FROM Elephant WHERE NAME LIKE :prefix || '%'")
     fun getByNamePrefix(prefix: String): List<Elephant>
 
+    @Query("SELECT COUNT(id) FROM Elephant")
+    fun getCount(): Int
+
     @Query("DELETE FROM Elephant")
     fun clear()
 }
