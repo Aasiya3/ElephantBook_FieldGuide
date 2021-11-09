@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ElephantBook-FieldGuide</string>
+    <string name="Submit">Submit</string>
+    <string name="SEEK_code">SEEK Code</string>
 </resources>
