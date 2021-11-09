@@ -67,7 +67,8 @@ class IndividualActivity : AppCompatActivity() {
         mapView.overlayManager.add(locationOverlay)
     }
 
-    fun checkLocationPermissions(mapView: MapView) {
+    private fun tryAddLocationToMap(mapView: MapView) {
+        // If we already have permission to access the location, add the user's location to the map
         if (ContextCompat.checkSelfPermission(
                 applicationContext,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -75,25 +76,18 @@ class IndividualActivity : AppCompatActivity() {
         ) {
             return addLocationToMap(mapView)
         }
-        // Register the permissions callback, which handles the user's response to the
-        // system permissions dialog. Save the return value, an instance of
-        // ActivityResultLauncher. You can use either a val, as shown in this snippet,
-        // or a lateinit var in your onAttach() or onCreate() method.
-        val requestPermissionLauncher =
-            registerForActivityResult(
-                ActivityResultContracts.RequestPermission()
-            ) { isGranted: Boolean ->
-                if (isGranted) {
-                    // Permission is granted. Continue the action or workflow in your
-                    // app.
-                    addLocationToMap(mapView)
-                } else {
-                    println("No location granted :(")
-                }
-            }
 
-        // The registered ActivityResultCallback gets the result of this request.
-        requestPermissionLauncher.launch(
+        // If we didn't already have access to the location, we need to request it
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                // Permission is granted. Add the marker to the map
+                addLocationToMap(mapView)
+            } else {
+                // Permission not granted. Don't add the marker
+                println("No location granted :(")
+            }
+        }.launch(
+            // The permission we're actually requesting
             Manifest.permission.ACCESS_FINE_LOCATION
         )
     }
@@ -104,7 +98,6 @@ class IndividualActivity : AppCompatActivity() {
         locationsUnsorted: List<Location>,
         elephantLocations: List<Location> = locationsUnsorted.sortedBy { it.dateTime }
     ) {
-        checkLocationPermissions(mapView)
         // "If MapView is not provided, infowindow popup will not function unless you set it yourself."
         // This is desired behavior. Empty infowindows are not useful
         val polyline = Polyline()
@@ -134,5 +127,8 @@ class IndividualActivity : AppCompatActivity() {
             setZoom(11.0)
             animateTo(recentPoint)
         }
+
+        // Try to add the user's location to the map
+        tryAddLocationToMap(mapView)
     }
 }
