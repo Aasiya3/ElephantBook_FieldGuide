@@ -10,7 +10,7 @@ interface ElephantDAO {
     fun insertAll(elephants: List<Elephant>)
 
     @Query("SELECT * FROM Elephant WHERE id = :id")
-    fun getById(id: Int): Elephant
+    fun getById(id: Int): Elephant?
 
     @Query("SELECT * FROM Elephant")
     fun getAll(): List<Elephant>

@@ -2,6 +2,7 @@ package com.example.elephantbook_fieldguide
 
 import androidx.room.Entity
 import org.json.JSONObject
+import org.osmdroid.util.GeoPoint
 import java.time.OffsetDateTime
 
 @Entity(primaryKeys = ["dateTime", "elephantId"])
@@ -22,6 +23,10 @@ data class Location(
         obj.getDouble("lon"),
         id
     )
+
+    fun toGeoPoint(): GeoPoint {
+        return GeoPoint(latitude, longitude)
+    }
 
     override fun toString(): String {
         return "$elephantId located $latitude, $longitude at $dateTime"
