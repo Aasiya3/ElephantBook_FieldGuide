@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.elephantbook_fieldguide">
-
+    package="com.example.elephantbook_fieldguide" >
     <!-- For volley, see https://stackoverflow.com/questions/2169294/how-to-add-manifest-permission-to-an-application -->
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -11,10 +10,13 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ElephantBookFieldGuide">
+        android:theme="@style/Theme.ElephantBookFieldGuide" >
+        <activity
+            android:name=".SeekSearch"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
