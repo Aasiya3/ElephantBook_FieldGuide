@@ -132,4 +132,8 @@ class DatabaseWrapper(
 
     }
 
+    fun getNumElephants(): Int {
+        return 0
+    }
+
 }
