@@ -24,10 +24,10 @@ class DatabaseWrapper(
 
     companion object {
         @SuppressLint("StaticFieldLeak")
-        var singleton: DatabaseWrapper? = null // This complains but we ignore it ;)
+        lateinit var singleton: DatabaseWrapper // This complains but we ignore it ;)
         fun create(ctx: Context): DatabaseWrapper {
-            if (singleton == null) singleton = DatabaseWrapper(ctx)
-            return singleton!!
+            if (!::singleton.isInitialized) singleton = DatabaseWrapper(ctx)
+            return singleton
         }
     }
 
@@ -125,16 +125,13 @@ class DatabaseWrapper(
     }
 
     fun getElephantsBySeek(seek: String): List<Elephant> {
-        val Elephants = elephantDAO.getAll()
-        val sortedElephants = Elephants.sortedBy {
+        return elephantDAO.getAll().sortedBy {
             Elephant -> seekDistance(seek, Elephant.seek)
         }
-        return sortedElephants
     }
 
     fun getLatestLocation(id: Int): Location? {
         return locationDAO.getLatest(id)
-
     }
 
 }

@@ -2,7 +2,6 @@ package com.example.elephantbook_fieldguide
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.util.Log
 import android.util.LruCache
 import com.android.volley.VolleyError
@@ -102,7 +101,7 @@ class ApiGetter(
                 override fun onErrorResponse(err: VolleyError) {
                     Log.w(
                         "ApiGetter",
-                        "Failed to load image with error ${err.toString()}"
+                        "Failed to load image with error $err"
                     )
                     then(false)
                 }
