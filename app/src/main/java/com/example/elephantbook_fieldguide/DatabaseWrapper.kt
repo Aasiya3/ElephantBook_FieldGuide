@@ -133,7 +133,7 @@ class DatabaseWrapper(
     }
 
     fun getNumElephants(): Int {
-        return 0
+        return elephantDAO.getCount()
     }
 
 }
