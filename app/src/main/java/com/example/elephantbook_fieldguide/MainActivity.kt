@@ -12,7 +12,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         findViewById<Button>(R.id.button).setOnClickListener { showIndividual(it) }
-
     }
 
     private fun showIndividual(view: View) {

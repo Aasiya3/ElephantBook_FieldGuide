@@ -1,6 +1,10 @@
 package com.example.elephantbook_fieldguide
 
 class Secrets {
-    val apiUrl = "https://localhost/individuals.json"
-    val imageUrl = "https://localhost/"
+    companion object {
+        const val apiUrl = "https://localhost/individuals.json"
+        const val imageUrl = "https://localhost/"
+        const val apiUsername = "user"
+        const val apiPassword = "pass"
+    }
 }
