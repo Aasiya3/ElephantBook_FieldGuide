@@ -2,7 +2,7 @@ package com.example.elephantbook_fieldguide
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
+import android.util.Base64
 import android.util.Log
 import android.util.LruCache
 import com.android.volley.VolleyError
@@ -21,8 +21,8 @@ class ApiGetter(
     private val queue = Volley.newRequestQueue(ctx)
 
     // URL to query the API at
-    private val apiUrl = Secrets().apiUrl
-    private val imageUrl = Secrets().imageUrl
+    private val apiUrl = Secrets.apiUrl
+    private val imageUrl = Secrets.imageUrl
 
     private fun parseApiResponse(response: JSONArray): Pair<List<Elephant>, List<Location>> {
         // Loop through the list of Elephants in the JSON to create lists of Elephant and Location objects
@@ -50,15 +50,30 @@ class ApiGetter(
         // This is technically a VolleyException, but no need to nitpick
         failCallback: (Exception) -> Unit
     ) {
-        val elephantArrReq = JsonArrayRequest(
-            apiUrl,
-            // Call the successCallback with the parsed data, so caller just gets a nice Pair of Lists
-            { response -> successCallback(parseApiResponse(response)) },
-            { err -> failCallback(err) },
+        // Send a request to get the JSON data
+        queue.add(
+            object : JsonArrayRequest(
+                // Request is sent to the API URL
+                apiUrl,
+                // Call the successCallback with the parsed data, so caller just gets a nice Pair of Lists
+                { response -> successCallback(parseApiResponse(response)) },
+                { err -> failCallback(err) },
+            ) {
+                // https://www.baeldung.com/kotlin/anonymous-inner-classes
+                // Ain't she neat?
+                override fun getHeaders(): MutableMap<String, String> {
+                    val headerMap = super.getHeaders().toMutableMap()
+                    headerMap["Authorization"] = "Basic ${
+                        // https://en.wikipedia.org/wiki/Basic_access_authentication
+                        Base64.encodeToString(
+                            "${Secrets.apiUsername}:${Secrets.apiPassword}".toByteArray(),
+                            Base64.NO_WRAP
+                        )
+                    }"
+                    return headerMap
+                }
+            }
         )
-
-        // Send the request
-        queue.add(elephantArrReq)
     }
 
     private val imageLoader = ImageLoader(queue, object : ImageLoader.ImageCache {
