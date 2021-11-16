@@ -2,11 +2,15 @@ package com.example.elephantbook_fieldguide
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.PixelFormat.RGBA_F16
+import android.os.Build
 import android.util.Base64
 import android.util.Log
-import android.util.LruCache
+import android.widget.ImageView
+import androidx.annotation.RequiresApi
+import com.android.volley.Response
 import com.android.volley.VolleyError
-import com.android.volley.toolbox.ImageLoader
+import com.android.volley.toolbox.ImageRequest
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONArray
@@ -76,17 +80,7 @@ class ApiGetter(
         )
     }
 
-    private val imageLoader = ImageLoader(queue, object : ImageLoader.ImageCache {
-        val cache = LruCache<String, Bitmap>(50)
-        override fun getBitmap(url: String?): Bitmap? {
-            return cache.get(url)
-        }
-
-        override fun putBitmap(url: String?, bitmap: Bitmap?) {
-            cache.put(url, bitmap)
-        }
-    })
-
+    @RequiresApi(Build.VERSION_CODES.O)
     fun downloadImage(url: String, path: String, then: (Boolean) -> Unit) {
         // If this file already exists, we're done
         if (File(path).exists()) {
@@ -94,32 +88,43 @@ class ApiGetter(
             return
         }
         // Create the ImageLoader for this URL
-        imageLoader.get(
-            imageUrl + url,
-            object : ImageLoader.ImageListener {
-                override fun onResponse(
-                    response: ImageLoader.ImageContainer,
-                    isImmediate: Boolean
-                ) {
-                    // If we got no bitmap, this is a cache miss and we ignore it
-                    if (response.bitmap == null) return
-                    // Open the file and write the image to it
+        queue.add(
+            object: ImageRequest(
+                imageUrl + url,
+                { response -> // Open the file and write the image to it
                     ctx.openFileOutput(path, Context.MODE_PRIVATE).use {
                         val stream = ByteArrayOutputStream()
                         // This compression works for jpegs also... not sure if that's cool or not
-                        response.bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                        response.compress(Bitmap.CompressFormat.PNG, 100, stream)
                         it.write(stream.toByteArray())
                     }
                     then(true)
+                },
+                0,
+                0,
+                ImageView.ScaleType.CENTER,
+                Bitmap.Config.RGBA_F16,
+                { err ->
+                        Log.w(
+                            "ApiGetter",
+                            "Failed to load image with error ${err.toString()}"
+                        )
+                        then(false)
                 }
-
-                // Wish we had some error handling anywhere in this code :(
-                override fun onErrorResponse(err: VolleyError) {
-                    Log.w(
-                        "ApiGetter",
-                        "Failed to load image with error ${err.toString()}"
-                    )
-                    then(false)
+            ) {
+                // TODO - This feels like a mistake to directly copy-paste here from above
+                // https://www.baeldung.com/kotlin/anonymous-inner-classes
+                // Ain't she neat?
+                override fun getHeaders(): MutableMap<String, String> {
+                    val headerMap = super.getHeaders().toMutableMap()
+                    headerMap["Authorization"] = "Basic ${
+                        // https://en.wikipedia.org/wiki/Basic_access_authentication
+                        Base64.encodeToString(
+                            "${Secrets.apiUsername}:${Secrets.apiPassword}".toByteArray(),
+                            Base64.NO_WRAP
+                        )
+                    }"
+                    return headerMap
                 }
             }
         )
