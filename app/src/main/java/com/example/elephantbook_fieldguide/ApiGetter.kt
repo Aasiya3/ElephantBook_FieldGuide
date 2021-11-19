@@ -2,14 +2,11 @@ package com.example.elephantbook_fieldguide
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.PixelFormat.RGBA_F16
 import android.os.Build
 import android.util.Base64
 import android.util.Log
 import android.widget.ImageView
 import androidx.annotation.RequiresApi
-import com.android.volley.Response
-import com.android.volley.VolleyError
 import com.android.volley.toolbox.ImageRequest
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
@@ -18,8 +15,8 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 
 class ApiGetter(
-    // Don't understand what this is but we need one and only activities can get one AFAIK
-    private val ctx: Context,
+        // Don't understand what this is but we need one and only activities can get one AFAIK
+        private val ctx: Context,
 ) {
     // Build the request queue and make the request
     private val queue = Volley.newRequestQueue(ctx)
@@ -49,84 +46,64 @@ class ApiGetter(
     }
 
     fun getElephantData(
-        // We call this with the lists of response data
-        successCallback: (Pair<List<Elephant>, List<Location>>) -> Unit,
-        // This is technically a VolleyException, but no need to nitpick
-        failCallback: (Exception) -> Unit
+            // We call this with the lists of response data
+            successCallback: (Pair<List<Elephant>, List<Location>>) -> Unit,
+            // This is technically a VolleyException, but no need to nitpick
+            failCallback: (Exception) -> Unit
     ) {
         // Send a request to get the JSON data
         queue.add(
-            object : JsonArrayRequest(
-                // Request is sent to the API URL
-                apiUrl,
-                // Call the successCallback with the parsed data, so caller just gets a nice Pair of Lists
-                { response -> successCallback(parseApiResponse(response)) },
-                { err -> failCallback(err) },
-            ) {
-                // https://www.baeldung.com/kotlin/anonymous-inner-classes
-                // Ain't she neat?
-                override fun getHeaders(): MutableMap<String, String> {
-                    val headerMap = super.getHeaders().toMutableMap()
-                    headerMap["Authorization"] = "Basic ${
-                        // https://en.wikipedia.org/wiki/Basic_access_authentication
-                        Base64.encodeToString(
-                            "${Secrets.apiUsername}:${Secrets.apiPassword}".toByteArray(),
-                            Base64.NO_WRAP
-                        )
-                    }"
-                    return headerMap
+                object : JsonArrayRequest(
+                        // Request is sent to the API URL
+                        apiUrl,
+                        // Call the successCallback with the parsed data, so caller just gets a nice Pair of Lists
+                        { response -> successCallback(parseApiResponse(response)) },
+                        { err -> failCallback(err) },
+                ) {
+                    // If this is modified, also modify downloadImage!
+                    // https://www.baeldung.com/kotlin/anonymous-inner-classes
+                    // Ain't she neat?
+                    override fun getHeaders() = Secrets.apiAuthHeaders
                 }
-            }
         )
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun downloadImage(url: String, path: String, then: (Boolean) -> Unit) {
         // If this file already exists, we're done
         if (File(path).exists()) {
             then(true)
             return
         }
-        // Create the ImageLoader for this URL
+
+        // Send the ImageRequest for this URL
         queue.add(
-            object: ImageRequest(
-                imageUrl + url,
-                { response -> // Open the file and write the image to it
-                    ctx.openFileOutput(path, Context.MODE_PRIVATE).use {
-                        val stream = ByteArrayOutputStream()
-                        // This compression works for jpegs also... not sure if that's cool or not
-                        response.compress(Bitmap.CompressFormat.PNG, 100, stream)
-                        it.write(stream.toByteArray())
-                    }
-                    then(true)
-                },
-                0,
-                0,
-                ImageView.ScaleType.CENTER,
-                Bitmap.Config.RGBA_F16,
-                { err ->
-                        Log.w(
-                            "ApiGetter",
-                            "Failed to load image with error ${err.toString()}"
-                        )
-                        then(false)
+                object : ImageRequest(
+                        imageUrl + url,
+                        { response -> // Open the file and write the image to it
+                            ctx.openFileOutput(path, Context.MODE_PRIVATE).use {
+                                val stream = ByteArrayOutputStream()
+                                // This compression works for jpegs also... not sure if that's cool or not
+                                response.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                                it.write(stream.toByteArray())
+                            }
+                            then(true)
+                        },
+                        0,
+                        0,
+                        ImageView.ScaleType.CENTER,
+                        Bitmap.Config.ARGB_8888,
+                        { err ->
+                            Log.w(
+                                    "ApiGetter",
+                                    "Failed to load image with error ${err.toString()}"
+                            )
+                            then(false)
+                        }
+                ) {
+                    // Copy pasted from getElephantData. Don't see a way around this, but if we
+                    // change the other one, please also change this one!
+                    override fun getHeaders() = Secrets.apiAuthHeaders
                 }
-            ) {
-                // TODO - This feels like a mistake to directly copy-paste here from above
-                // https://www.baeldung.com/kotlin/anonymous-inner-classes
-                // Ain't she neat?
-                override fun getHeaders(): MutableMap<String, String> {
-                    val headerMap = super.getHeaders().toMutableMap()
-                    headerMap["Authorization"] = "Basic ${
-                        // https://en.wikipedia.org/wiki/Basic_access_authentication
-                        Base64.encodeToString(
-                            "${Secrets.apiUsername}:${Secrets.apiPassword}".toByteArray(),
-                            Base64.NO_WRAP
-                        )
-                    }"
-                    return headerMap
-                }
-            }
         )
     }
 }

@@ -1,6 +1,7 @@
 package com.example.elephantbook_fieldguide
 
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.room.TypeConverter
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
@@ -13,11 +14,8 @@ class Converters {
     }
 
     @TypeConverter
+    @RequiresApi(Build.VERSION_CODES.O)
     fun toOffsetDateTime(dateTime: String) : OffsetDateTime {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            OffsetDateTime.parse(dateTime, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-        } else {
-            TODO("VERSION.SDK_INT < O")
-        }
+        return OffsetDateTime.parse(dateTime, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
     }
 }
