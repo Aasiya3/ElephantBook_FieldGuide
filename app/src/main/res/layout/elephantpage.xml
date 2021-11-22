@@ -19,6 +19,7 @@
         android:layout_width="412dp"
         android:layout_height="50dp"
         android:text="TextView"
+        android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/mapView"
         tools:layout_editor_absoluteX="-2dp" />
 
@@ -27,16 +28,20 @@
         android:layout_width="184dp"
         android:layout_height="54dp"
         android:text="TextView"
+        android:textSize="24sp"
+        android:textAlignment="center"
         tools:layout_editor_absoluteX="113dp"
         tools:layout_editor_absoluteY="59dp" />
 
     <TextView
         android:id="@+id/seekCode"
         android:layout_width="410dp"
-        android:layout_height="32dp"
+        android:layout_height="30dp"
         android:text="TextView"
-        tools:layout_editor_absoluteX="6dp"
-        tools:layout_editor_absoluteY="113dp" />
+        android:textAlignment="center"
+        android:textSize="24sp"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="115dp" />
 
     <ImageView
         android:id="@+id/elephantPicture"
@@ -45,8 +50,6 @@
         tools:layout_editor_absoluteX="-3dp"
         tools:layout_editor_absoluteY="145dp"
         tools:srcCompat="@tools:sample/avatars" />
-
-
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/navigation_bar"
