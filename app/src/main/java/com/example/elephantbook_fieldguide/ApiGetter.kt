@@ -2,10 +2,12 @@ package com.example.elephantbook_fieldguide
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Build
+import android.util.Base64
 import android.util.Log
-import android.util.LruCache
-import com.android.volley.VolleyError
-import com.android.volley.toolbox.ImageLoader
+import android.widget.ImageView
+import androidx.annotation.RequiresApi
+import com.android.volley.toolbox.ImageRequest
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONArray
@@ -13,15 +15,15 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 
 class ApiGetter(
-    // Don't understand what this is but we need one and only activities can get one AFAIK
-    private val ctx: Context,
+        // Don't understand what this is but we need one and only activities can get one AFAIK
+        private val ctx: Context,
 ) {
     // Build the request queue and make the request
     private val queue = Volley.newRequestQueue(ctx)
 
     // URL to query the API at
-    private val apiUrl = Secrets().apiUrl
-    private val imageUrl = Secrets().imageUrl
+    private val apiUrl = Secrets.apiUrl
+    private val imageUrl = Secrets.imageUrl
 
     private fun parseApiResponse(response: JSONArray): Pair<List<Elephant>, List<Location>> {
         // Loop through the list of Elephants in the JSON to create lists of Elephant and Location objects
@@ -44,32 +46,27 @@ class ApiGetter(
     }
 
     fun getElephantData(
-        // We call this with the lists of response data
-        successCallback: (Pair<List<Elephant>, List<Location>>) -> Unit,
-        // This is technically a VolleyException, but no need to nitpick
-        failCallback: (Exception) -> Unit
+            // We call this with the lists of response data
+            successCallback: (Pair<List<Elephant>, List<Location>>) -> Unit,
+            // This is technically a VolleyException, but no need to nitpick
+            failCallback: (Exception) -> Unit
     ) {
-        val elephantArrReq = JsonArrayRequest(
-            apiUrl,
-            // Call the successCallback with the parsed data, so caller just gets a nice Pair of Lists
-            { response -> successCallback(parseApiResponse(response)) },
-            { err -> failCallback(err) },
+        // Send a request to get the JSON data
+        queue.add(
+                object : JsonArrayRequest(
+                        // Request is sent to the API URL
+                        apiUrl,
+                        // Call the successCallback with the parsed data, so caller just gets a nice Pair of Lists
+                        { response -> successCallback(parseApiResponse(response)) },
+                        { err -> failCallback(err) },
+                ) {
+                    // If this is modified, also modify downloadImage!
+                    // https://www.baeldung.com/kotlin/anonymous-inner-classes
+                    // Ain't she neat?
+                    override fun getHeaders() = Secrets.apiAuthHeaders
+                }
         )
-
-        // Send the request
-        queue.add(elephantArrReq)
     }
-
-    private val imageLoader = ImageLoader(queue, object : ImageLoader.ImageCache {
-        val cache = LruCache<String, Bitmap>(50)
-        override fun getBitmap(url: String?): Bitmap? {
-            return cache.get(url)
-        }
-
-        override fun putBitmap(url: String?, bitmap: Bitmap?) {
-            cache.put(url, bitmap)
-        }
-    })
 
     fun downloadImage(url: String, path: String, then: (Boolean) -> Unit) {
         // If this file already exists, we're done
@@ -77,35 +74,36 @@ class ApiGetter(
             then(true)
             return
         }
-        // Create the ImageLoader for this URL
-        imageLoader.get(
-            imageUrl + url,
-            object : ImageLoader.ImageListener {
-                override fun onResponse(
-                    response: ImageLoader.ImageContainer,
-                    isImmediate: Boolean
-                ) {
-                    // If we got no bitmap, this is a cache miss and we ignore it
-                    if (response.bitmap == null) return
-                    // Open the file and write the image to it
-                    ctx.openFileOutput(path, Context.MODE_PRIVATE).use {
-                        val stream = ByteArrayOutputStream()
-                        // This compression works for jpegs also... not sure if that's cool or not
-                        response.bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-                        it.write(stream.toByteArray())
-                    }
-                    then(true)
-                }
 
-                // Wish we had some error handling anywhere in this code :(
-                override fun onErrorResponse(err: VolleyError) {
-                    Log.w(
-                        "ApiGetter",
-                        "Failed to load image with error $err"
-                    )
-                    then(false)
+        // Send the ImageRequest for this URL
+        queue.add(
+                object : ImageRequest(
+                        imageUrl + url,
+                        { response -> // Open the file and write the image to it
+                            ctx.openFileOutput(path, Context.MODE_PRIVATE).use {
+                                val stream = ByteArrayOutputStream()
+                                // This compression works for jpegs also... not sure if that's cool or not
+                                response.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                                it.write(stream.toByteArray())
+                            }
+                            then(true)
+                        },
+                        0,
+                        0,
+                        ImageView.ScaleType.CENTER,
+                        Bitmap.Config.ARGB_8888,
+                        { err ->
+                            Log.w(
+                                    "ApiGetter",
+                                    "Failed to load image with error ${err.toString()}"
+                            )
+                            then(false)
+                        }
+                ) {
+                    // Copy pasted from getElephantData. Don't see a way around this, but if we
+                    // change the other one, please also change this one!
+                    override fun getHeaders() = Secrets.apiAuthHeaders
                 }
-            }
         )
     }
 }

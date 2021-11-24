@@ -31,7 +31,7 @@ class DatabaseWrapper private constructor(
         }
     }
 
-    fun updateDatabase(then: () -> Unit) {
+    fun updateDatabase(then: (Boolean) -> Unit) {
         apiGetter.getElephantData(
             { (newElephants, newLocations) ->
                 // Clear and re-fill the database
@@ -53,14 +53,17 @@ class DatabaseWrapper private constructor(
                         // If the pfpCounter is 0, we were the last downloader
                         if (pfpCounter.decrementAndGet() == 0) {
                             // Caller callback
-                            then()
+                            then(true)
                         }
                     }
                 }
             },
             { err ->
-                println("BRSAKAI_ERR")
-                println(err) // TODO Error handling
+                Log.w(
+                    "DatabaseWrapper",
+                    "Failed to load elephant data with error $err"
+                )
+                then(false)
             }
         )
     }
