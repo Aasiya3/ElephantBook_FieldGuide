@@ -11,15 +11,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        findViewById<Button>(R.id.button).setOnClickListener { showIndividual(it) }
-
+        DatabaseWrapper.create(applicationContext).updateDatabase {
+            findViewById<Button>(R.id.button).setOnClickListener { showIndividual(it) }
+        }
     }
 
     private fun showIndividual(view: View) {
         startActivity(Intent(this, IndividualActivity::class.java).apply {
             putExtra(
                 "elephantId",
-                5
+                2
             )
         })
     }
