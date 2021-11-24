@@ -3,6 +3,10 @@
     package="com.example.elephantbook_fieldguide">
     <!-- For volley, see https://stackoverflow.com/questions/2169294/how-to-add-manifest-permission-to-an-application -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- For OSMDroid, see https://github.com/osmdroid/osmdroid/wiki/How-to-use-the-osmdroid-library-(Kotlin) -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
 
     <application
         android:allowBackup="true"
