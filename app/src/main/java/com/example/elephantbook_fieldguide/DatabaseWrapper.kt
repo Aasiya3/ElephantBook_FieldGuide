@@ -8,7 +8,7 @@ import androidx.room.Room
 import java.io.FileNotFoundException
 import java.util.concurrent.atomic.AtomicInteger
 
-class DatabaseWrapper(
+class DatabaseWrapper private constructor(
     private val ctx: Context,
     elephantBookDatabase: ElephantBookDatabase = Room.databaseBuilder(
         ctx,
@@ -24,25 +24,25 @@ class DatabaseWrapper(
 
     companion object {
         @SuppressLint("StaticFieldLeak")
-        var singleton: DatabaseWrapper? = null // This complains but we ignore it ;)
+        lateinit var singleton: DatabaseWrapper // This complains but we ignore it ;)
         fun create(ctx: Context): DatabaseWrapper {
-            if (singleton == null) singleton = DatabaseWrapper(ctx)
-            return singleton!!
+            if (!::singleton.isInitialized) singleton = DatabaseWrapper(ctx)
+            return singleton
         }
     }
 
     fun updateDatabase(then: (Boolean) -> Unit) {
         apiGetter.getElephantData(
-            { response ->
+            { (newElephants, newLocations) ->
                 // Clear and re-fill the database
                 elephantDAO.clear()
                 locationDAO.clear()
-                elephantDAO.insertAll(response.first)
-                locationDAO.insertAll(response.second)
+                elephantDAO.insertAll(newElephants)
+                locationDAO.insertAll(newLocations)
                 // Counts how many more PFPs we have to download
                 // When this hits 0, we're good to move on
-                val pfpCounter = AtomicInteger(response.first.size)
-                for (elephant in response.first) {
+                val pfpCounter = AtomicInteger(newElephants.size)
+                for (elephant in newElephants) {
                     // Flatten file structure
                     val pfpFile = elephant.pfp.replace('/', '_')
                     // Download the image
@@ -98,15 +98,15 @@ class DatabaseWrapper(
     }
 
 
-    private fun seekDistance(seek: String, otherSeek: String): Int{
+    private fun seekDistance(seek: String, otherSeek: String): Int {
         val givenCode = seek.toMutableList()
         val otherCode = otherSeek.toMutableList()
 
-        val equal : MutableList<Int> = arrayListOf()
-        for(i in givenCode.indices){
-            if(givenCode[i] == otherCode[i]){
+        val equal: MutableList<Int> = arrayListOf()
+        for (i in givenCode.indices) {
+            if (givenCode[i] == otherCode[i]) {
                 equal.add(1)
-            }else{
+            } else {
                 equal.add(0)
             }
         }
@@ -114,10 +114,10 @@ class DatabaseWrapper(
         //Equal or one is wildcard
         var penalty = 0 //wildcard penalty
         var average = 0
-        for(i in givenCode.indices){
-            if(equal[i] == 1 || givenCode[i] == '?' || otherCode[i] == '?'){
+        for (i in givenCode.indices) {
+            if (equal[i] == 1 || givenCode[i] == '?' || otherCode[i] == '?') {
                 average++
-                if(otherCode[i] =='?'){
+                if (otherCode[i] == '?') {
                     penalty++
                 }
             }
@@ -128,16 +128,13 @@ class DatabaseWrapper(
     }
 
     fun getElephantsBySeek(seek: String): List<Elephant> {
-        val Elephants = elephantDAO.getAll()
-        val sortedElephants = Elephants.sortedBy {
-            Elephant -> seekDistance(seek, Elephant.seek)
+        return elephantDAO.getAll().sortedBy { elephant ->
+            seekDistance(seek, elephant.seek)
         }
-        return sortedElephants
     }
 
     fun getLatestLocation(id: Int): Location? {
         return locationDAO.getLatest(id)
-
     }
 
 }
