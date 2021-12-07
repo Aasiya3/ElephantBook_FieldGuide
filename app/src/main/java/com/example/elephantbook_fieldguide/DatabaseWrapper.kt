@@ -97,34 +97,15 @@ class DatabaseWrapper private constructor(
         return locationDAO.getById(id)
     }
 
-
     private fun seekDistance(seek: String, otherSeek: String): Int {
-        val givenCode = seek.toMutableList()
-        val otherCode = otherSeek.toMutableList()
-
-        val equal: MutableList<Int> = arrayListOf()
-        for (i in givenCode.indices) {
-            if (givenCode[i] == otherCode[i]) {
-                equal.add(1)
-            } else {
-                equal.add(0)
-            }
+        // This looks tricky but seems as easy as any other way to do this
+        // Starting from 0, add 1 to our count any time we hit a ? or a
+        // mismatch (we handle the case where otherSeek[index] == '?'
+        // implicitly, cause either it matches seek[index] and
+        // seek[index] == '?', or it doesn't match seek[index]
+        return seek.indices.fold(0) { accumulator: Int, index: Int ->
+            accumulator + if (seek[index] == '?' || seek[index] != otherSeek[index]) 1 else 0
         }
-
-        //Equal or one is wildcard
-        var penalty = 0 //wildcard penalty
-        var average = 0
-        for (i in givenCode.indices) {
-            if (equal[i] == 1 || givenCode[i] == '?' || otherCode[i] == '?') {
-                average++
-                if (otherCode[i] == '?') {
-                    penalty++
-                }
-            }
-        }
-        average /= givenCode.size
-        penalty /= givenCode.size
-        return average - penalty
     }
 
     fun getElephantsBySeek(seek: String): List<Elephant> {
