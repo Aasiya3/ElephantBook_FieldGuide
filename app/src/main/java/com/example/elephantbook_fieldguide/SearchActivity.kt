@@ -17,7 +17,7 @@ class SearchActivity : AppCompatActivity() {
         setContentView(R.layout.activity_search)
 
         val databaseWrapper = DatabaseWrapper.create(applicationContext)
-        val searchAdapter = SearchAdapter(databaseWrapper.getAllElephants(), ::showIndividual)
+        val searchAdapter = SearchAdapter(databaseWrapper.getAllElephants(), databaseWrapper, ::showIndividual)
         findViewById<RecyclerView>(R.id.recyclerView).apply {
             layoutManager = LinearLayoutManager(this@SearchActivity)
             adapter = searchAdapter

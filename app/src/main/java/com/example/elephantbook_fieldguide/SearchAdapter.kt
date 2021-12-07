@@ -7,15 +7,22 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class SearchAdapter(private var elephants: List<Elephant>, private val onClick: (Int?) -> Unit) :
+class SearchAdapter(private var elephants: List<Elephant>, private val databaseWrapper: DatabaseWrapper, private val onClick: (Int?) -> Unit) :
     RecyclerView.Adapter<SearchAdapter.ViewHolder>() {
-    class ViewHolder(view: View, private val onClick: (Int?) -> Unit) :
+    class ViewHolder(private val view: View, private val databaseWrapper: DatabaseWrapper, private val onClick: (Int?) -> Unit) :
         RecyclerView.ViewHolder(view) {
-        val textView: TextView = view.findViewById(R.id.textView)
-        var id: Int? = null
+        var elephant: Elephant? = null
 
         init {
-            view.setOnClickListener { onClick(id) }
+            view.setOnClickListener { onClick(elephant?.id) }
+        }
+
+        fun updateView(newElephant: Elephant) {
+            elephant = newElephant
+            view.findViewById<TextView>(R.id.elephantName).text = elephant?.name
+            view.findViewById<TextView>(R.id.seekCode).text = elephant?.seek
+            view.findViewById<TextView>(R.id.lastSeen).text =
+                elephant?.id?.let { databaseWrapper.getLatestLocation(it)?.dateTime.toString() }
         }
     }
 
@@ -24,13 +31,13 @@ class SearchAdapter(private var elephants: List<Elephant>, private val onClick: 
             LayoutInflater
                 .from(parent.context)
                 .inflate(R.layout.view_search_item, parent, false),
+            databaseWrapper,
             onClick
         )
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.textView.text = elephants[position].toString()
-        holder.id = elephants[position].id
+        holder.updateView(elephants[position])
     }
 
     override fun getItemCount(): Int {
