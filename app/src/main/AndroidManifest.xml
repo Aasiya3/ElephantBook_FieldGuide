@@ -2,11 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.elephantbook_fieldguide">
     <!-- For volley, see https://stackoverflow.com/questions/2169294/how-to-add-manifest-permission-to-an-application -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <!-- For OSMDroid, see https://github.com/osmdroid/osmdroid/wiki/How-to-use-the-osmdroid-library-(Kotlin) -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- For OSMDroid, see https://github.com/osmdroid/osmdroid/wiki/How-to-use-the-osmdroid-library-(Kotlin) -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -15,6 +13,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ElephantBookFieldGuide">
+        <activity
+            android:name=".SearchActivity"
+            android:exported="false" />
         <activity
             android:name=".IndividualActivity"
             android:exported="false" />
