@@ -29,9 +29,15 @@ class DatabaseWrapper private constructor(
             if (!::singleton.isInitialized) singleton = DatabaseWrapper(ctx)
             return singleton
         }
+
+        enum class UpdateStatus(val status: Int) {
+            SUCCESS(0),
+            BAD_API(1),
+            BAD_IMAGES(2)
+        }
     }
 
-    fun updateDatabase(then: (Boolean) -> Unit) {
+    fun updateDatabase(then: (UpdateStatus) -> Unit) {
         apiGetter.getElephantData(
             { (newElephants, newLocations) ->
                 // Clear and re-fill the database
@@ -42,6 +48,7 @@ class DatabaseWrapper private constructor(
                 // Counts how many more PFPs we have to download
                 // When this hits 0, we're good to move on
                 val pfpCounter = AtomicInteger(newElephants.size)
+                val failCounter = AtomicInteger(0)
                 for (elephant in newElephants) {
                     // Flatten file structure
                     val pfpFile = elephant.pfp.replace('/', '_')
@@ -49,21 +56,22 @@ class DatabaseWrapper private constructor(
                     apiGetter.downloadImage(elephant.pfp, pfpFile)
                     {
                         // Log a download failure if we didn't get the image
-                        if (!it) Log.i("updateDatabase", "Could not get ${elephant.pfp}")
+                        if (!it) Log.d("updateDatabase", "Could not get ${elephant.pfp}")
+                        if (!it) failCounter.incrementAndGet()
                         // If the pfpCounter is 0, we were the last downloader
                         if (pfpCounter.decrementAndGet() == 0) {
                             // Caller callback
-                            then(true)
+                            then(if (failCounter.get() == 0) UpdateStatus.SUCCESS else UpdateStatus.BAD_IMAGES)
                         }
                     }
                 }
             },
             { err ->
-                Log.w(
+                Log.d(
                     "DatabaseWrapper",
                     "Failed to load elephant data with error $err"
                 )
-                then(false)
+                then(UpdateStatus.BAD_API)
             }
         )
     }
@@ -102,7 +110,7 @@ class DatabaseWrapper private constructor(
         // Starting from 0, add 1 to our count any time we hit a ? or a
         // mismatch (we handle the case where otherSeek[index] == '?'
         // implicitly, cause either it matches seek[index] and
-        // seek[index] == '?', or it doesn't match seek[index]
+        // seek[index] == '?', or it doesn't match seek[index])
         return seek.indices.fold(0) { accumulator: Int, index: Int ->
             accumulator + if (seek[index] == '?' || seek[index] != otherSeek[index]) 1 else 0
         }

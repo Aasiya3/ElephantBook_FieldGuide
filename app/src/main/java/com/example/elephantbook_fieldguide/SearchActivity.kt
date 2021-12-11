@@ -17,16 +17,16 @@ class SearchActivity : AppCompatActivity() {
         setContentView(R.layout.activity_search)
 
         val databaseWrapper = DatabaseWrapper.create(applicationContext)
-        val searchAdapter = SearchAdapter(databaseWrapper.getAllElephants(), ::showIndividual)
+        val searchMethod = when (intent.getStringExtra(getString(R.string.searchBy))!!) {
+            getString(R.string.searchByName) -> databaseWrapper::getElephantsByNamePrefix
+            getString(R.string.searchBySeek) -> databaseWrapper::getElephantsBySeek
+            else -> throw IllegalArgumentException("Illegal searchBy method!")
+        }
+
+        val searchAdapter = SearchAdapter(searchMethod(""), ::showIndividual)
         findViewById<RecyclerView>(R.id.recyclerView).apply {
             layoutManager = LinearLayoutManager(this@SearchActivity)
             adapter = searchAdapter
-        }
-
-        val searchMethod = when (intent.getStringExtra("searchBy")!!) {
-            "Name" -> databaseWrapper::getElephantsByNamePrefix
-            "SEEK" -> databaseWrapper::getElephantsBySeek
-            else -> throw IllegalArgumentException("Illegal searchBy method!")
         }
 
         findViewById<EditText>(R.id.query).run {

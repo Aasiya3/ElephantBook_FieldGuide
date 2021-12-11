@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">ElephantBook-FieldGuide</string>
     <string name="preference_secrets">com.example.elephantbook_fieldguide.PREFERENCES_SECRETS_KEY</string>
+    <string name="searchBy">SearchActivity_SearchBy</string>
+    <string name="searchByName">Name</string>
+    <string name="searchBySeek">SEEK</string>
 </resources>
