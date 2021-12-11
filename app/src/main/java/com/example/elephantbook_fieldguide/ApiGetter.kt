@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import android.widget.ImageView
+import com.android.volley.DefaultRetryPolicy
 import com.android.volley.toolbox.ImageRequest
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
@@ -60,7 +61,7 @@ class ApiGetter(
                 // If this is modified, also modify downloadImage!
                 // https://www.baeldung.com/kotlin/anonymous-inner-classes
                 // Ain't she neat?
-                override fun getHeaders() = Secrets.apiAuthHeaders
+                override fun getHeaders() = Secrets.getApiAuthHeaders()
             }
         )
     }
@@ -99,7 +100,7 @@ class ApiGetter(
             ) {
                 // Copy pasted from getElephantData. Don't see a way around this, but if we
                 // change the other one, please also change this one!
-                override fun getHeaders() = Secrets.apiAuthHeaders
+                override fun getHeaders() = Secrets.getApiAuthHeaders()
             }
         )
     }

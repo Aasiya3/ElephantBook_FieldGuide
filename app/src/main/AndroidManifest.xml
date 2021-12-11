@@ -14,6 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ElephantBookFieldGuide">
         <activity
+            android:name=".CredentialsActivity"
+            android:exported="false" />
+        <activity
             android:name=".SearchActivity"
             android:exported="false" />
         <activity
