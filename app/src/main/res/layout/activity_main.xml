@@ -4,34 +4,53 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <!--android:contentDescription="@drawable/compressed_IMG_5085"-->
-    <!--app:srcCompat="@drawable/compressed_IMG_5085" /> -->
-    <!-- android:contentDescription="@drawable/compressed_p1090053"-->
-    <!-- app:srcCompat="@drawable/compressed_p1090053"-->
-
     <Button
-        android:id="@+id/button"
+        android:id="@+id/nameSearch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Change API Secrets"
-        app:layout_constraintBottom_toTopOf="@+id/button2"
+        android:text="Search by Name"
+        app:layout_constraintBottom_toTopOf="@+id/seekSearch"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/seekSearch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Search"
+        android:text="Search by SEEK"
+        app:layout_constraintBottom_toTopOf="@+id/updateDatabase"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nameSearch"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <Button
+        android:id="@+id/updateDatabase"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Update Database"
+        app:layout_constraintBottom_toTopOf="@+id/changeCredentials"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seekSearch"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <Button
+        android:id="@+id/changeCredentials"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Update API Credentials"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
-
-
+        app:layout_constraintTop_toBottomOf="@+id/updateDatabase"
+        app:layout_constraintVertical_bias="0.5" />
 </androidx.constraintlayout.widget.ConstraintLayout>

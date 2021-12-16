@@ -19,10 +19,6 @@ class ApiGetter(
     // Build the request queue and make the request
     private val queue = Volley.newRequestQueue(ctx)
 
-    // URL to query the API at
-    private val apiUrl = Secrets.apiUrl
-    private val imageUrl = Secrets.imageUrl
-
     private fun parseApiResponse(response: JSONArray): Pair<List<Elephant>, List<Location>> {
         // Loop through the list of Elephants in the JSON to create lists of Elephant and Location objects
         val elephants = mutableListOf<Elephant>()
@@ -53,7 +49,7 @@ class ApiGetter(
         queue.add(
             object : JsonArrayRequest(
                 // Request is sent to the API URL
-                apiUrl,
+                Secrets.apiUrl,
                 // Call the successCallback with the parsed data, so caller just gets a nice Pair of Lists
                 { response -> successCallback(parseApiResponse(response)) },
                 { err -> failCallback(err) },
@@ -76,7 +72,7 @@ class ApiGetter(
         // Send the ImageRequest for this URL
         queue.add(
             object : ImageRequest(
-                imageUrl + url,
+                Secrets.imageUrl + url,
                 { response -> // Open the file and write the image to it
                     ctx.openFileOutput(path, Context.MODE_PRIVATE).use {
                         val stream = ByteArrayOutputStream()
@@ -91,9 +87,9 @@ class ApiGetter(
                 ImageView.ScaleType.CENTER,
                 Bitmap.Config.ARGB_8888,
                 { err ->
-                    Log.w(
+                    Log.d(
                         "ApiGetter",
-                        "Failed to load image with error ${err.toString()}"
+                        "Failed to load image with error $err"
                     )
                     then(false)
                 }
