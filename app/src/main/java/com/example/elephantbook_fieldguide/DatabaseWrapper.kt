@@ -38,7 +38,7 @@ class DatabaseWrapper private constructor(
                 elephantDAO.clear()
                 locationDAO.clear()
                 elephantDAO.insertAll(newElephants)
-                locationDAO.insertAll(newLocations)
+                locationDAO.insertAll(newLocations.distinct())
                 // Counts how many more PFPs we have to download
                 // When this hits 0, we're good to move on
                 val pfpCounter = AtomicInteger(newElephants.size)
